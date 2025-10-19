@@ -3,9 +3,10 @@ import cookieParser from 'cookie-parser'; // Importing cookie-parser for handlin
 import cors from 'cors'; // Importing cors for handling CORS issues
 import dotenv from 'dotenv';
 import connectDB from './utils/db.js';
+import userRouter from './routes/userRouter.js';
 
 
-dotenv.config();    
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,9 +27,15 @@ const corsOptions = {
 app.use(cors(corsOptions)); // Use CORS middleware with the specified options
 
 
-// Connect to the database
-connectDB();
+
+// Apis
+app.use("/api/v1/user", userRouter)
+
+
+
 
 app.listen(PORT, () => {
+    // Connect to the database
+    connectDB();
     console.log(`Server is running on http://localhost:${PORT}`);
 });
