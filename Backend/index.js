@@ -4,6 +4,7 @@ import cors from 'cors'; // Importing cors for handling CORS issues
 import dotenv from 'dotenv';
 import connectDB from './utils/db.js';
 import userRouter from './routes/userRouter.js';
+import companyRouter from './routes/companyRouter.js';
 
 
 dotenv.config();
@@ -29,7 +30,8 @@ app.use(cors(corsOptions)); // Use CORS middleware with the specified options
 
 
 // Apis
-app.use("/api/v1/user", userRouter)
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/company", companyRouter)
 
 
 

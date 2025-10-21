@@ -39,10 +39,10 @@ export const register = async (req, res) => {
             message: "User registered successfully",
             success: true
         })
-    } catch (error) {
+    } catch (error) { 
         return res.status(500).json({
-            message: "Error in registering user",
-            success: false
+            message: "Error in registering user", 
+            success: false  
         })
     }
 }
@@ -126,7 +126,7 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
-        return res.status(200).cookie("token", "", maxAge = 0).json({
+        return res.status(200).cookie("token", "", { maxAge: 0 }).json({
             message: "Logged out successfully",
             success: true
         })
@@ -143,17 +143,16 @@ export const updateProfile = async (req, res) => {
     try {
         const { fullName, email, contact, bio, skills } = req.body;
         const file = req.file;
-        // when user updates profile, they must provide fullName, email, contact, bio and skills
-        if (!fullName || !email || !contact || !bio || !skills) {
-            return res.status(400).json({
-                message: "All fields are required",
-                success: false
-            })
-        }
+
 
         // Cloudinary logic to upload resume can be added here
 
-        const skillsArray = skills.split(","); //convert skills string to array
+        let skillsArray;
+
+        if (skills) {
+            skillsArray = skills.split(","); //convert skills string to array
+        }
+
         const userId = req.id // from authMiddleware
 
         let user = await User.findById(userId);
@@ -165,11 +164,13 @@ export const updateProfile = async (req, res) => {
         }
 
         // update user profile
-        user.fullName = fullName;
-        user.email = email;
-        user.contact = contact;
-        user.bio = bio;
-        user.skills = skillsArray;
+
+        if (fullName) user.fullName = fullName;
+        if (email) user.email = email;
+        if (contact) user.contact = contact;
+        if (bio) user.bio = bio;
+        if (skills) user.skills = skillsArray
+
 
         // Resume logic here 
 
@@ -182,7 +183,10 @@ export const updateProfile = async (req, res) => {
             email: user.email,
             contact: user.contact,
             role: user.role,
-            profile: user.profile
+            profile: {
+                skills: user.skills,
+                bio: user.bio,
+            },
         }
 
         return res.status(200).json({
@@ -197,3 +201,4 @@ export const updateProfile = async (req, res) => {
         })
     }
 }
+
