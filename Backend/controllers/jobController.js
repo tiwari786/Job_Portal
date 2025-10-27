@@ -3,22 +3,23 @@ import Job from "../models/jobModel.js";
 //admin post job
 export const createJob = async (req, res) => {
     try {
-        const { title, description, requiremnets, salary, location, jobType, experience, companyId } = req.body;
+        const { title, description, requiremnets, position, salary, location, jobType, experience, companyId } = req.body;
         const userId = req.id;
-        if (!title || !description || !requiremnets || !salary || !location || !jobType || !experience || !companyId) {
-            return req.status(400).json({
+        if (!title || !description || !requiremnets || !position || !salary || !location || !jobType || !experience || !companyId) {
+            return res.status(400).json({
                 message: "All fields are required",
                 success: false
             })
         }
 
-        const job = await Job.create({
+        const jobs = await Job.create({
             title,
             description,
             requiremnets: requiremnets.split(","),
             salary: Number(salary),
             location,
             jobType,
+            position,
             experienceLevel: experience,
             company: companyId,
             created_by: userId
@@ -27,12 +28,12 @@ export const createJob = async (req, res) => {
 
         return res.status(201).json({
             message: "Job created successfully",
-            job,
+            jobs,
             success: true
         })
 
     } catch (error) {
-        req.status(500).json({
+        res.status(500).json({
             message: "Internal server error",
             success: false
         })
@@ -51,7 +52,10 @@ export const getAllJobs = async (req, res) => {
             ]
         }
 
-        const jobs = await Job.find(query);
+        const jobs = await Job.find(query).populate({
+            path: "company"
+        }).sort({ createdAt: -1 })
+        
         if (!jobs) {
             return res.status(404).json({
                 message: "Jobs not found",
@@ -75,8 +79,10 @@ export const getAllJobs = async (req, res) => {
 // for student
 export const jobById = async (req, res) => {
     try {
-        const jobId = req.params.id
-        const jobs = await Job.findById({ jobId })
+        const jobId = req.params.id;
+        const jobs = await Job.findById(jobId).populate({
+            path: "company"
+        }).sort({ createdAt: -1 })
 
         if (!jobs) {
             return res.status(400).json({
@@ -93,6 +99,7 @@ export const jobById = async (req, res) => {
 
 
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             message: "Internal server error",
             success: false
@@ -104,7 +111,9 @@ export const jobById = async (req, res) => {
 export const getAdminJobs = async (req, res) => {
     try {
         const adminId = req.id;
-        const jobs = await Job.find({ created_by: adminId })
+        const jobs = await Job.find({ created_by: adminId }).populate({
+            path: "company"
+        }).sort({ createdAt: -1 })
 
         if (!jobs) {
             return res.status(404).json({
