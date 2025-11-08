@@ -6,6 +6,7 @@ import connectDB from './utils/db.js';
 import userRouter from './routes/userRouter.js';
 import companyRouter from './routes/companyRouter.js';
 import jobRouter from './routes/jobRouter.js';
+import applicationRouter from './routes/applicationRouter.js';
 
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.use(cors(corsOptions)); // Use CORS middleware with the specified options
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/company", companyRouter)
 app.use("/api/v1/job", jobRouter)
+app.use("/api/v1/application", applicationRouter)
 
 
 
